@@ -559,7 +559,6 @@ body {
   max-width: 600px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 2;
 }
 @media (max-width: 520px) { .reel-grid { grid-template-columns: 1fr; max-width: 280px; } }
-.reel-item { }
 .reel-frame {
   aspect-ratio: 9/16; background: var(--petal); border-radius: 14px; overflow: hidden;
   box-shadow: 0 12px 40px rgba(196,122,138,0.12); cursor: pointer;
