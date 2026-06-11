@@ -1,6 +1,137 @@
-/* ═══════════════════════════════════════════
-   FOR DISA — main.js
-   ═══════════════════════════════════════════ */
+/* ── AUDIO SYNTHESIZER ENGINE ── */
+let audioCtx = null;
+
+function getAudioContext() {
+  const Ctx = window.AudioContext || window.webkitAudioContext;
+  if (!Ctx) return null;
+  if (!audioCtx) audioCtx = new Ctx();
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+  return audioCtx;
+}
+
+function playPaperTearSound() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+  const bufferSize = ctx.sampleRate * 0.4;
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    const noise = Math.random() * 2 - 1;
+    const crackle = Math.random() < 0.006 ? (Math.random() * 2 - 1) * 0.45 : 0;
+    data[i] = noise * 0.12 + crackle;
+  }
+  const source = ctx.createBufferSource();
+  source.buffer = buffer;
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.setValueAtTime(1400, now);
+  filter.frequency.exponentialRampToValueAtTime(250, now + 0.4);
+  filter.Q.setValueAtTime(4.0, now);
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.001, now);
+  gain.gain.linearRampToValueAtTime(0.22, now + 0.05);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+  source.connect(filter);
+  filter.connect(gain);
+  gain.connect(ctx.destination);
+  source.start(now);
+  source.stop(now + 0.4);
+}
+
+function playPaperRustleSound() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+  const bufferSize = ctx.sampleRate * 0.28;
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = Math.random() * 2 - 1;
+  }
+  const source = ctx.createBufferSource();
+  source.buffer = buffer;
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.setValueAtTime(2200, now);
+  filter.frequency.exponentialRampToValueAtTime(500, now + 0.28);
+  filter.Q.setValueAtTime(1.5, now);
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.001, now);
+  gain.gain.linearRampToValueAtTime(0.08, now + 0.03);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.28);
+  source.connect(filter);
+  filter.connect(gain);
+  gain.connect(ctx.destination);
+  source.start(now);
+  source.stop(now + 0.28);
+}
+
+function playWritingScratchSound() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+  const bufferSize = ctx.sampleRate * 0.04;
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = Math.random() * 2 - 1;
+  }
+  const source = ctx.createBufferSource();
+  source.buffer = buffer;
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.setValueAtTime(2600 + Math.random() * 500, now);
+  filter.Q.setValueAtTime(6.0, now);
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.02, now);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.035);
+  source.connect(filter);
+  filter.connect(gain);
+  gain.connect(ctx.destination);
+  source.start(now);
+  source.stop(now + 0.04);
+}
+
+function playStarChimeSound(freq = 880) {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(freq, now);
+  osc.frequency.exponentialRampToValueAtTime(freq * 1.4, now + 0.22);
+  gain.gain.setValueAtTime(0.001, now);
+  gain.gain.linearRampToValueAtTime(0.045, now + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.32);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(now);
+  osc.stop(now + 0.32);
+}
+
+function playMagicConstellationSound() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+  const notes = [698.46, 880.00, 1046.50, 1396.91, 1760.00, 2093.00];
+  notes.forEach((freq, index) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, now + index * 0.06);
+    gain.gain.setValueAtTime(0.0001, now + index * 0.06);
+    gain.gain.linearRampToValueAtTime(0.05, now + index * 0.06 + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + index * 0.06 + 0.38);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now + index * 0.06);
+    osc.stop(now + index * 0.06 + 0.4);
+  });
+}
 
 /* ── CURSOR ── */
 const cursor     = document.getElementById('cursor');
@@ -263,6 +394,10 @@ addFloatingCutes();
   wrap.addEventListener('click', e => {
     if (opened) return;
     opened = true;
+    
+    // Play paper tear sound
+    playPaperTearSound();
+    
     wrap.classList.add('open');
     const rect = wrap.getBoundingClientRect();
     createQuietClickSpark(rect.left + rect.width / 2, rect.top + rect.height / 2);
@@ -271,6 +406,19 @@ addFloatingCutes();
     setTimeout(() => {
       scene.classList.add('gone');
       main.classList.add('revealed');
+      
+      // Play paper rustle sound when scrapbook is opened
+      playPaperRustleSound();
+      
+      // Reveal the companion "Skye" and speak a welcome bubble
+      const skye = document.getElementById('skye-companion');
+      if (skye) {
+        skye.classList.add('visible');
+        setTimeout(() => {
+          window.showSkyeBubble && window.showSkyeBubble("hey, you actually showed up. ♡");
+        }, 800);
+      }
+      
       // Try to start music
       window.tryMusicPlay && window.tryMusicPlay();
     }, 1600);
@@ -816,4 +964,467 @@ addFloatingCutes();
       updateTitle();
     }
   });
+})();
+
+/* ── FLOATING COMPANION "SKYE" ── */
+(function () {
+  const skye = document.getElementById('skye-companion');
+  if (!skye) return;
+  const skyeCloud = skye.querySelector('.skye-cloud');
+  const skyeBubble = skye.querySelector('.skye-speech-bubble');
+  const skyeQuote = skye.querySelector('.skye-quote');
+
+  let skyePos = { x: 80, y: window.innerHeight - 140 };
+  let skyeTarget = { x: 80, y: window.innerHeight - 140 };
+
+  document.addEventListener('mousemove', (e) => {
+    skyeTarget.x = e.clientX - 50;
+    skyeTarget.y = e.clientY + 30;
+  });
+
+  function updateSkye() {
+    skyePos.x += (skyeTarget.x - skyePos.x) * 0.045;
+    skyePos.y += (skyeTarget.y - skyePos.y) * 0.045;
+
+    const pad = 20;
+    skyePos.x = Math.max(pad, Math.min(window.innerWidth - 90, skyePos.x));
+    skyePos.y = Math.max(pad, Math.min(window.innerHeight - 90, skyePos.y));
+
+    skye.style.left = skyePos.x + 'px';
+    skye.style.top = skyePos.y + 'px';
+
+    requestAnimationFrame(updateSkye);
+  }
+  requestAnimationFrame(updateSkye);
+
+  const quotes = [
+    "Thinking of you right now... ♡",
+    "Scroll down, I'm right here with you. ✨",
+    "Life gets messy, but you're my favorite part. 🌸",
+    "Did you know? You're incredibly special to me.",
+    "meow meow rawr. 🐾",
+    "No matter what happens, you will always matter to me. ♡",
+    "Click anywhere to spill some watercolor magic!",
+    "Are you enjoying the music? ♫"
+  ];
+
+  let bubbleTimeout = null;
+  window.showSkyeBubble = function (customText = null) {
+    if (bubbleTimeout) clearTimeout(bubbleTimeout);
+
+    const text = customText || quotes[Math.floor(Math.random() * quotes.length)];
+    skyeQuote.textContent = text;
+    skyeBubble.classList.add('show');
+
+    playStarChimeSound(1000 + Math.random() * 250);
+
+    skyeCloud.style.transform = 'scale(1.18) rotate(6deg)';
+    setTimeout(() => {
+      skyeCloud.style.transform = '';
+    }, 250);
+
+    bubbleTimeout = setTimeout(() => {
+      skyeBubble.classList.remove('show');
+    }, 3200);
+  };
+
+  skyeCloud.addEventListener('click', (e) => {
+    e.stopPropagation();
+    window.showSkyeBubble();
+  });
+
+  setInterval(() => {
+    if (skye.classList.contains('visible') && !skyeBubble.classList.contains('show') && Math.random() < 0.4) {
+      window.showSkyeBubble();
+    }
+  }, 22000);
+})();
+
+/* ── CALLIGRAPHY DESK WRITING ── */
+(function () {
+  const section = document.querySelector('.calligraphy-section');
+  if (!section) return;
+  const deskPaper = section.querySelector('.desk-paper');
+  const feather = section.querySelector('.calligraphy-feather');
+  const lines = [
+    section.querySelector('.written-line-1'),
+    section.querySelector('.written-line-2'),
+    section.querySelector('.written-line-3')
+  ];
+
+  const texts = [
+    "I know I'm not perfect. I can get messy,",
+    "I can say silly things and get it wrong sometimes...",
+    "But you are and always will be incredibly special to me."
+  ];
+
+  let started = false;
+  
+  const writerObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !started) {
+        started = true;
+        startWriting();
+        writerObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.45 });
+
+  writerObserver.observe(section);
+
+  async function startWriting() {
+    feather.style.display = 'block';
+    
+    for (let l = 0; l < lines.length; l++) {
+      const lineEl = lines[l];
+      const text = texts[l];
+      const lineRect = lineEl.getBoundingClientRect();
+      
+      let currentText = "";
+      
+      for (let i = 0; i < text.length; i++) {
+        currentText += text[i];
+        lineEl.textContent = currentText;
+        
+        const progress = i / text.length;
+        const featherX = 48 + progress * (lineRect.width - 48);
+        const featherY = lineEl.offsetTop + 32;
+        
+        feather.style.left = featherX + 'px';
+        feather.style.top = featherY + 'px';
+        
+        if (text[i] !== ' ') {
+          playWritingScratchSound();
+        }
+        
+        await new Promise(r => setTimeout(r, 60 + Math.random() * 50));
+      }
+      
+      await new Promise(r => setTimeout(r, 600));
+    }
+    
+    feather.style.transition = 'all 0.5s ease';
+    feather.style.opacity = '0';
+    setTimeout(() => {
+      feather.style.display = 'none';
+    }, 500);
+  }
+})();
+
+/* ── TIMELINE MEMORY UNFOLD ── */
+(function () {
+  const items = document.querySelectorAll('.timeline-item');
+  
+  const timelineObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        timelineObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  items.forEach(item => {
+    timelineObserver.observe(item);
+    
+    const card = item.querySelector('.timeline-card');
+    card.addEventListener('click', () => {
+      const alreadyUnfolded = card.classList.contains('unfolded');
+      
+      document.querySelectorAll('.timeline-card').forEach(c => c.classList.remove('unfolded'));
+      
+      if (!alreadyUnfolded) {
+        card.classList.add('unfolded');
+        playPaperRustleSound();
+        
+        const index = Number(item.dataset.index);
+        const comments = [
+          "I still remember how my heart raced that day... ♡",
+          "We stayed up so late, the moon went to sleep before us. 🌙",
+          "No storm will ever be strong enough to pull me away. ⛈️"
+        ];
+        if (window.showSkyeBubble) {
+          window.showSkyeBubble(comments[index]);
+        }
+      }
+    });
+  });
+})();
+
+/* ── CONSTELLATION SKY CANVAS ── */
+(function () {
+  const section = document.querySelector('.constellation-section');
+  if (!section) return;
+  const canvas = document.getElementById('constellation-canvas');
+  const ctx = canvas.getContext('2d');
+  const letter = document.getElementById('constellation-letter');
+
+  let W, H;
+  function resize() {
+    if (!canvas.parentNode) return;
+    const rect = canvas.parentNode.getBoundingClientRect();
+    W = canvas.width = rect.width;
+    H = canvas.height = rect.height;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const heartPoints = [
+    { x: 0, y: -0.22 },
+    { x: 0.22, y: -0.38 },
+    { x: 0.38, y: -0.2 },
+    { x: 0.3, y: 0.08 },
+    { x: 0, y: 0.38 }, // bottom tip
+    { x: -0.3, y: 0.08 },
+    { x: -0.38, y: -0.2 },
+    { x: -0.22, y: -0.38 }
+  ];
+
+  let stars = [];
+  function initStars() {
+    stars = heartPoints.map((pt, index) => {
+      return {
+        id: index,
+        x: W / 2 + pt.x * W * 0.85,
+        y: H / 2 + pt.y * H * 0.85,
+        r: 3.5 + Math.random() * 2,
+        active: false,
+        pulsePhase: Math.random() * Math.PI,
+        pulseSpeed: 0.02 + Math.random() * 0.03
+      };
+    });
+  }
+  initStars();
+  window.addEventListener('resize', initStars);
+
+  let bgStars = [];
+  function initBgStars() {
+    bgStars = [];
+    for (let i = 0; i < 40; i++) {
+      bgStars.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        alpha: 0.2 + Math.random() * 0.5,
+        speed: 0.01 + Math.random() * 0.02,
+        phase: Math.random() * Math.PI
+      });
+    }
+  }
+  initBgStars();
+  window.addEventListener('resize', initBgStars);
+
+  let selectedOrder = [];
+  let isComplete = false;
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    bgStars.forEach(s => {
+      s.phase += s.speed;
+      const alpha = s.alpha * ((Math.sin(s.phase) + 1) / 2);
+      ctx.fillStyle = `rgba(253, 245, 239, ${alpha})`;
+      ctx.fillRect(s.x, s.y, 1.2, 1.2);
+    });
+
+    if (selectedOrder.length > 0) {
+      ctx.beginPath();
+      ctx.strokeStyle = 'rgba(247, 212, 223, 0.45)';
+      ctx.shadowColor = 'rgba(232, 160, 184, 0.5)';
+      ctx.shadowBlur = 12;
+      ctx.lineWidth = 1.8;
+
+      const firstStar = stars[selectedOrder[0]];
+      ctx.moveTo(firstStar.x, firstStar.y);
+
+      for (let i = 1; i < selectedOrder.length; i++) {
+        const star = stars[selectedOrder[i]];
+        ctx.lineTo(star.x, star.y);
+      }
+
+      if (isComplete) {
+        ctx.closePath();
+      }
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+    }
+
+    stars.forEach(s => {
+      s.pulsePhase += s.pulseSpeed;
+      const scale = 1 + Math.sin(s.pulsePhase) * 0.18;
+      
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r * 2.8 * scale, 0, Math.PI * 2);
+      ctx.fillStyle = s.active 
+        ? 'rgba(232, 160, 184, 0.22)' 
+        : 'rgba(247, 212, 223, 0.08)';
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r * scale, 0, Math.PI * 2);
+      ctx.fillStyle = s.active ? '#ffffff' : 'rgba(247, 212, 223, 0.7)';
+      ctx.fill();
+
+      if (s.active) {
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.lineWidth = 1.0;
+        ctx.beginPath();
+        ctx.moveTo(s.x - s.r * 2, s.y); ctx.lineTo(s.x + s.r * 2, s.y);
+        ctx.moveTo(s.x, s.y - s.r * 2); ctx.lineTo(s.x, s.y + s.r * 2);
+        ctx.stroke();
+      }
+    });
+
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+
+  canvas.addEventListener('click', (e) => {
+    if (isComplete) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    let clickedStar = null;
+    for (let i = 0; i < stars.length; i++) {
+      const s = stars[i];
+      const dist = Math.hypot(s.x - x, s.y - y);
+      if (dist < 28) {
+        clickedStar = s;
+        break;
+      }
+    }
+
+    if (clickedStar) {
+      const id = clickedStar.id;
+      
+      if (!selectedOrder.includes(id)) {
+        selectedOrder.push(id);
+        clickedStar.active = true;
+        
+        const chimeFreqs = [440, 493.88, 523.25, 587.33, 659.25, 698.46, 783.99, 880.00];
+        const freqIndex = (selectedOrder.length - 1) % chimeFreqs.length;
+        playStarChimeSound(chimeFreqs[freqIndex]);
+        
+        createQuietClickSpark(e.clientX, e.clientY);
+
+        if (selectedOrder.length === stars.length) {
+          isComplete = true;
+          playMagicConstellationSound();
+          
+          setTimeout(() => {
+            letter.classList.add('reveal');
+            if (window.showSkyeBubble) {
+              window.showSkyeBubble("you found my heart in the stars... ✧");
+            }
+          }, 800);
+        }
+      }
+    }
+  });
+
+  const seal = letter.querySelector('.letter-seal');
+  seal.addEventListener('click', (e) => {
+    e.stopPropagation();
+    letter.classList.remove('reveal');
+    selectedOrder = [];
+    stars.forEach(s => s.active = false);
+    isComplete = false;
+    playPaperRustleSound();
+  });
+})();
+
+/* ── WATERCOLOR CLICK BLOTCHES ── */
+(function () {
+  const canvas = document.getElementById('watercolor-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  let W, H;
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  let blotches = [];
+
+  class Blot {
+    constructor(x, y) {
+      this.x = x;
+      this.y = y;
+      this.r = 10;
+      this.maxR = 50 + Math.random() * 40;
+      this.alpha = 0.24;
+      this.speed = 1.5 + Math.random() * 1.5;
+      const colors = [
+        'rgba(247, 212, 223, ',
+        'rgba(232, 160, 184, ',
+        'rgba(212, 173, 207, ',
+        'rgba(245, 197, 176, '
+      ];
+      this.colorBase = colors[Math.floor(Math.random() * colors.length)];
+      this.points = [];
+      const numPoints = 8 + Math.floor(Math.random() * 5);
+      for (let i = 0; i < numPoints; i++) {
+        const angle = (i / numPoints) * Math.PI * 2;
+        this.points.push({
+          angle: angle,
+          variance: 0.8 + Math.random() * 0.4
+        });
+      }
+    }
+    update() {
+      if (this.r < this.maxR) {
+        this.r += this.speed;
+        this.alpha -= 0.0018;
+      } else {
+        this.alpha -= 0.004;
+      }
+    }
+    draw() {
+      if (this.alpha <= 0) return;
+      ctx.save();
+      ctx.beginPath();
+      const startX = this.x + Math.cos(this.points[0].angle) * this.r * this.points[0].variance;
+      const startY = this.y + Math.sin(this.points[0].angle) * this.r * this.points[0].variance;
+      ctx.moveTo(startX, startY);
+
+      for (let i = 1; i < this.points.length; i++) {
+        const pt = this.points[i];
+        const currX = this.x + Math.cos(pt.angle) * this.r * pt.variance;
+        const currY = this.y + Math.sin(pt.angle) * this.r * pt.variance;
+        ctx.lineTo(currX, currY);
+      }
+      ctx.closePath();
+      
+      ctx.shadowColor = this.colorBase + '0.15)';
+      ctx.shadowBlur = 15;
+      ctx.fillStyle = this.colorBase + this.alpha + ')';
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('input, button, a, .polaroid, .reel-frame, #lightbox, .timeline-card, #constellation-canvas, #skye-companion')) return;
+    blotches.push(new Blot(e.clientX, e.clientY));
+    if (blotches.length > 25) {
+      blotches.shift();
+    }
+  });
+
+  function loop() {
+    ctx.clearRect(0, 0, W, H);
+    blotches.forEach((b, index) => {
+      b.update();
+      b.draw();
+      if (b.alpha <= 0) {
+        blotches.splice(index, 1);
+      }
+    });
+    requestAnimationFrame(loop);
+  }
+  loop();
 })();

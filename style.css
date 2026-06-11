@@ -1138,6 +1138,500 @@ footer {
   }
 }
 
+#watercolor-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1; /* behind content, above particle canvas */
+}
+
+/* ─── WAX SEAL & CALLIGRAPHY FRONT TAG ─── */
+.envelope-label-front {
+  position: absolute;
+  top: 28%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Great Vibes', cursive;
+  font-size: 32px;
+  color: var(--ink-mid);
+  opacity: 0.8;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+.envelope-wrap.open .envelope-label-front {
+  opacity: 0;
+}
+
+.wax-seal-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 52px;
+  height: 52px;
+  z-index: 6;
+  display: flex;
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.envelope-wrap.open .wax-seal-container {
+  transform: translate(-50%, -50%) scale(0.8);
+}
+
+.wax-seal-half {
+  width: 26px;
+  height: 52px;
+  position: relative;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
+  overflow: visible;
+}
+
+.wax-seal-half svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 2px 5px rgba(0,0,0,0.15));
+}
+
+.envelope-wrap.open .seal-left {
+  transform: translateX(-35px) rotate(-25deg);
+  opacity: 0;
+}
+.envelope-wrap.open .seal-right {
+  transform: translateX(35px) rotate(25deg);
+  opacity: 0;
+}
+
+/* ─── POLAROID WASHI TAPE ─── */
+.polaroid::before {
+  content: '';
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-3deg);
+  width: 65px;
+  height: 22px;
+  background: rgba(245, 197, 176, 0.55); /* var(--warmth) with alpha */
+  backdrop-filter: blur(1.5px);
+  -webkit-backdrop-filter: blur(1.5px);
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  z-index: 5;
+  transition: transform 0.3s ease;
+}
+.polaroid:hover::before {
+  transform: translateX(-50%) rotate(0deg) scaleY(0.9) translateY(2px);
+}
+
+/* ─── FLOATING SKY COMPANION ─── */
+.skye-companion {
+  position: fixed;
+  bottom: 32px;
+  left: 32px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: auto;
+  transition: transform 0.15s ease-out, opacity 0.5s ease;
+  opacity: 0;
+  transform: translateY(40px) scale(0.8);
+}
+
+.skye-companion.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.skye-cloud {
+  width: 72px;
+  height: 52px;
+  position: relative;
+  cursor: pointer;
+  filter: drop-shadow(0 6px 15px rgba(196,122,138,0.18));
+  animation: skyeFloat 4s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+@keyframes skyeFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(2deg); }
+}
+
+.skye-cloud svg {
+  width: 100%;
+  height: 100%;
+}
+
+.skye-cloud svg path {
+  fill: #ffffff;
+  transition: fill 0.3s ease;
+}
+
+.skye-cloud:hover svg path {
+  fill: #fffdf5;
+}
+
+.skye-halo {
+  position: absolute;
+  inset: -6px;
+  background: radial-gradient(circle, rgba(245, 197, 176, 0.4) 0%, transparent 70%);
+  z-index: -1;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: haloPulse 3s ease-in-out infinite;
+}
+
+@keyframes haloPulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.15); }
+}
+
+.skye-speech-bubble {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%) scale(0);
+  transform-origin: bottom center;
+  background: linear-gradient(135deg, #fffefe 0%, #fff9fb 100%);
+  border: 1px solid rgba(196,122,138,0.22);
+  border-radius: 12px;
+  padding: 8px 12px;
+  width: 150px;
+  box-shadow: 0 8px 25px rgba(196,122,138,0.12);
+  pointer-events: none;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 1001;
+}
+
+.skye-speech-bubble.show {
+  transform: translateX(-50%) scale(1);
+}
+
+.skye-speech-bubble p {
+  margin: 0;
+  font-family: 'Reenie Beanie', cursive;
+  font-size: 15px;
+  line-height: 1.2;
+  color: var(--ink-mid);
+  text-align: center;
+}
+
+.skye-speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px 6px 0;
+  border-style: solid;
+  border-color: #fff9fb transparent;
+  display: block;
+  width: 0;
+}
+
+.skye-speech-bubble::before {
+  content: '';
+  position: absolute;
+  bottom: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 7px 7px 0;
+  border-style: solid;
+  border-color: rgba(196,122,138,0.22) transparent;
+  display: block;
+  width: 0;
+  z-index: -1;
+}
+
+/* ─── TIMELINE SECTION ─── */
+.timeline-section .paper-fold-wrapper {
+  background: linear-gradient(135deg, #fffcf9 0%, var(--cream) 100%);
+}
+
+.timeline-container {
+  position: relative;
+  max-width: 640px;
+  margin: 40px auto 0;
+  padding: 20px 0;
+}
+
+.timeline-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 30px;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--blush), var(--rose) 50%, var(--blush));
+  opacity: 0.5;
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 40px;
+  padding-left: 70px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.timeline-item.in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.timeline-badge {
+  position: absolute;
+  left: 17px;
+  top: 6px;
+  width: 28px;
+  height: 28px;
+  background: #fff;
+  border: 2px solid var(--rose);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  box-shadow: 0 3px 10px rgba(196,122,138,0.15);
+  transition: background 0.3s, transform 0.3s;
+}
+
+.timeline-badge span {
+  color: var(--rose);
+  font-size: 14px;
+  line-height: 1;
+  display: block;
+}
+
+.timeline-card-wrapper {
+  perspective: 1000px;
+}
+
+.timeline-card {
+  background: #fffefb;
+  border: 1px solid rgba(196,122,138,0.15);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(196,122,138,0.08);
+  position: relative;
+  cursor: pointer;
+  transform-origin: top center;
+  transform: rotateX(-45deg);
+  opacity: 0.5;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
+}
+
+.timeline-card.unfolded {
+  transform: rotateX(0deg);
+  opacity: 1;
+  box-shadow: 0 20px 45px rgba(196,122,138,0.15);
+}
+
+.card-crease {
+  position: absolute;
+  top: 15px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(196,122,138,0.08), transparent);
+  z-index: 2;
+}
+
+.timeline-date {
+  font-family: 'Lato', sans-serif;
+  font-size: 8px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--mauve);
+  margin-bottom: 6px;
+}
+
+.timeline-card-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400;
+  font-size: 20px;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+
+.timeline-card-copy {
+  font-family: 'Lato', sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-mid);
+  font-weight: 300;
+  margin-bottom: 14px;
+}
+
+.timeline-card-photo-placeholder {
+  height: 120px;
+  background: var(--petal);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--deep-rose);
+  opacity: 0.45;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 14px;
+  border: 1px dashed rgba(196,122,138,0.3);
+  overflow: hidden;
+  position: relative;
+}
+
+/* ─── CALLIGRAPHY DESK SECTION ─── */
+.calligraphy-section .paper-fold-wrapper {
+  background: radial-gradient(circle at center, #fff9f6 0%, #ecd6de 100%);
+}
+
+.desk-paper {
+  max-width: 600px;
+  margin: 0 auto;
+  background: #fffffb;
+  border: 1px solid rgba(196,122,138,0.18);
+  border-radius: 2px;
+  padding: 60px 48px;
+  box-shadow: 
+    0 15px 40px rgba(0,0,0,0.08),
+    0 2px 10px rgba(0,0,0,0.02);
+  position: relative;
+  overflow: hidden;
+  min-height: 340px;
+}
+
+.paper-texture-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.calligraphy-feather {
+  position: absolute;
+  font-size: 24px;
+  pointer-events: none;
+  transition: left 0.1s linear, top 0.1s linear;
+  z-index: 50;
+  display: none; /* Show only during active writing animation */
+  transform: translate(-10px, -24px) rotate(-15deg);
+}
+
+.written-text-container {
+  position: relative;
+  z-index: 2;
+}
+
+.written-line {
+  font-family: 'Great Vibes', cursive;
+  font-size: clamp(28px, 4.5vw, 42px);
+  line-height: 1.6;
+  color: #2b1f23; /* rich ink black */
+  margin-bottom: 20px;
+  min-height: 48px;
+  position: relative;
+  letter-spacing: 0.02em;
+  filter: drop-shadow(0 0.5px 0.5px rgba(43,31,35,0.15));
+}
+
+/* ─── CONSTELLATION Sky SECTION ─── */
+.constellation-section .paper-fold-wrapper {
+  background: radial-gradient(circle at center, #180d12 0%, #060204 100%);
+  box-shadow: none;
+  border: none;
+}
+
+.constellation-hint {
+  text-align: center;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--blush);
+  opacity: 0.65;
+  margin-bottom: 24px;
+}
+
+.canvas-container {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  aspect-ratio: 1;
+  margin: 0 auto;
+  border: 1px solid rgba(247,212,223,0.12);
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(24, 13, 18, 0.4);
+  box-shadow: inset 0 0 40px rgba(0,0,0,0.8);
+}
+
+#constellation-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: pointer;
+}
+
+.constellation-letter {
+  position: absolute;
+  inset: 24px;
+  background: linear-gradient(135deg, #fffefc 0%, #ffedf4 100%);
+  border: 1px solid rgba(196,122,138,0.22);
+  border-radius: 12px;
+  padding: 36px 28px 28px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  text-align: center;
+  transform: scale(0.8) translateY(40px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.8s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.constellation-letter.reveal {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.letter-seal {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--rose);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  box-shadow: 0 4px 10px rgba(196,122,138,0.3);
+  margin-bottom: 16px;
+}
+
+.letter-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+
+.letter-body {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink-mid);
+  margin-bottom: 18px;
+}
+
+.letter-signature {
+  font-family: 'Great Vibes', cursive;
+  font-size: 24px;
+  color: var(--deep-rose);
+}
+
 /* ─── UTILS ─── */
 @keyframes fadeUp {
   from { opacity:0; transform:translateY(28px); }

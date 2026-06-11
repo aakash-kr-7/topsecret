@@ -6,7 +6,7 @@
   <title>For Disa — always</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500;1,600&family=Lato:wght@300;400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500;1,600&family=Lato:wght@300;400&family=Great+Vibes&family=Reenie+Beanie&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -17,6 +17,9 @@
 
 <!-- Particle canvas -->
 <canvas id="particle-canvas"></canvas>
+
+<!-- Watercolor canvas -->
+<canvas id="watercolor-canvas"></canvas>
 
 <!-- ════════════════════════════════════════
      ENVELOPE INTRO
@@ -49,15 +52,25 @@
           <line x1="340" y1="210" x2="170" y2="105" stroke="#C47A8A" stroke-width="1"/>
         </svg>
 
+        <!-- envelope label front -->
+        <div class="envelope-label-front">For Disa</div>
+
         <!-- wax seal -->
-        <div class="wax-seal">
-          <svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="26" cy="26" r="24" fill="#C47A8A"/>
-            <circle cx="26" cy="26" r="20" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1"/>
-            <!-- heart -->
-            <path d="M26 34 C26 34 14 26 14 20 C14 15.5 17.6 13 21 14 C23 14.6 24.8 16 26 18 C27.2 16 29 14.6 31 14 C34.4 13 38 15.5 38 20 C38 26 26 34 26 34Z"
-                  fill="rgba(255,255,255,0.9)"/>
-          </svg>
+        <div class="wax-seal-container">
+          <div class="wax-seal-half seal-left">
+            <svg viewBox="0 0 26 52" xmlns="http://www.w3.org/2000/svg">
+              <path d="M26,2 C12,2 2,12 2,26 C2,40 12,50 26,50 L26,2 Z" fill="#C47A8A"/>
+              <path d="M26,34 C26,34 14,26 14,20 C14,15.5 17.6,13 21,14 C23,14.6 24.8,16 26,18 Z" fill="rgba(255,255,255,0.9)"/>
+              <path d="M26,2 C13,2 3,11 3,25 C3,39 13,49 26,49" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+            </svg>
+          </div>
+          <div class="wax-seal-half seal-right">
+            <svg viewBox="26 0 26 52" xmlns="http://www.w3.org/2000/svg">
+              <path d="M26,2 C40,2 50,12 50,26 C50,40 40,50 26,50 L26,2 Z" fill="#C47A8A"/>
+              <path d="M26,34 C26,34 38,26 38,20 C38,15.5 34.4,13 31,14 C29,14.6 27.2,16 26,18 Z" fill="rgba(255,255,255,0.9)"/>
+              <path d="M26,2 C39,2 49,11 49,25 C49,39 39,49 26,49" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+            </svg>
+          </div>
         </div>
 
         <!-- letter peeking out -->
@@ -202,6 +215,64 @@
     </div>
   </section>
 
+  <!-- ── MEMORY TIMELINE ── -->
+  <section class="timeline-section page-section" data-paper-label="our shared hours" data-paper-copy="every hour with you is carved into my heart.">
+    <div class="paper-fold-wrapper">
+      <div class="paper-shadow-overlay"></div>
+      <div class="section-inner">
+        <h2 class="section-title">our shared hours</h2>
+        <div class="timeline-container">
+          <div class="timeline-line"></div>
+          
+          <div class="timeline-item" data-index="0">
+            <div class="timeline-badge"><span>♥</span></div>
+            <div class="timeline-card-wrapper">
+              <div class="timeline-card">
+                <div class="card-crease"></div>
+                <div class="timeline-date">the first hello</div>
+                <h3 class="timeline-card-title">where it all started</h3>
+                <p class="timeline-card-copy">I still remember the jittery feeling before talking to you. A simple hello that ended up changing my entire world.</p>
+                <div class="timeline-card-photo-placeholder">
+                  <span class="photo-desc">✧ first light ✧</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-item" data-index="1">
+            <div class="timeline-badge"><span>♥</span></div>
+            <div class="timeline-card-wrapper">
+              <div class="timeline-card">
+                <div class="card-crease"></div>
+                <div class="timeline-date">late night whispers</div>
+                <h3 class="timeline-card-title">losing track of time</h3>
+                <p class="timeline-card-copy">Hours felt like minutes, talking about everything and nothing. I realized then that I didn't want to fall asleep if it meant not talking to you.</p>
+                <div class="timeline-card-photo-placeholder">
+                  <span class="photo-desc">✧ starlight conversations ✧</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-item" data-index="2">
+            <div class="timeline-badge"><span>♥</span></div>
+            <div class="timeline-card-wrapper">
+              <div class="timeline-card">
+                <div class="card-crease"></div>
+                <div class="timeline-date">through the storms</div>
+                <h3 class="timeline-card-title">holding on tight</h3>
+                <p class="timeline-card-copy">We fought, we got messy, and we made mistakes. But we stayed. Because the thought of letting go of you was far more terrifying than any storm.</p>
+                <div class="timeline-card-photo-placeholder">
+                  <span class="photo-desc">✧ shelter in the rain ✧</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ── LETTER II ── -->
   <section class="letter-section page-section">
     <div class="paper-fold-wrapper">
@@ -219,6 +290,24 @@
             <strong>Not even a little.</strong>
           </p>
           <p class="letter-note">this part I mean more than anything else</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CALLIGRAPHY DESK ── -->
+  <section class="calligraphy-section page-section" data-paper-label="from the inkwell" data-paper-copy="watch the words write themselves onto the paper.">
+    <div class="paper-fold-wrapper">
+      <div class="paper-shadow-overlay"></div>
+      <div class="section-inner">
+        <div class="desk-paper">
+          <div class="paper-texture-overlay"></div>
+          <div class="calligraphy-feather">✒️</div>
+          <div class="written-text-container">
+            <p class="written-line written-line-1"></p>
+            <p class="written-line written-line-2"></p>
+            <p class="written-line written-line-3"></p>
+          </div>
         </div>
       </div>
     </div>
@@ -308,6 +397,27 @@
             without hesitation.
           </p>
           <p class="letter-note">quietly, always</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CONSTELLATION CANVAS ── -->
+  <section class="constellation-section page-section" data-paper-label="the sky of us" data-paper-copy="connect the stars to reveal what's written in the sky.">
+    <div class="paper-fold-wrapper">
+      <div class="paper-shadow-overlay"></div>
+      <div class="section-inner" style="position:relative; z-index:2;">
+        <h2 class="section-title" style="color:var(--cream);">the sky of us</h2>
+        <p class="constellation-hint">tap the shining stars to connect them and find the secret constellation</p>
+        
+        <div class="canvas-container">
+          <canvas id="constellation-canvas"></canvas>
+          <div id="constellation-letter" class="constellation-letter">
+            <div class="letter-seal">♥</div>
+            <h3 class="letter-title">written in the stars</h3>
+            <p class="letter-body">I know I can get it wrong, and I know life is messy, but my love for you is as constant as the stars in the night sky. You are my home, Disa. Always.</p>
+            <span class="letter-signature">— Your Skye</span>
+          </div>
         </div>
       </div>
     </div>
@@ -423,6 +533,24 @@
 
   <svg class="volume-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#C47A8A" stroke-width="2" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
   <input type="range" id="p-vol" min="0" max="1" step="0.05" value="0.65" aria-label="Volume" />
+</div>
+
+<!-- Floating Skye Companion -->
+<div id="skye-companion" class="skye-companion" role="img" aria-label="Skye Companion">
+  <div class="skye-cloud">
+    <svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20,40 C10,40 5,30 15,20 C10,10 25,-5 40,5 C50,-5 70,-2 75,10 C85,5 95,15 90,25 C100,35 90,50 75,45 C70,55 50,58 35,50 C28,55 20,52 20,40 Z" fill="#ffffff" />
+      <circle cx="35" cy="28" r="2.5" fill="#5a5568"/>
+      <circle cx="55" cy="28" r="2.5" fill="#5a5568"/>
+      <ellipse cx="29" cy="32" rx="3.5" ry="2" fill="#ffccd5"/>
+      <ellipse cx="61" cy="32" rx="3.5" ry="2" fill="#ffccd5"/>
+      <path d="M43,32 Q45,34 47,32 Q49,34 51,32" fill="none" stroke="#5a5568" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <div class="skye-halo"></div>
+  </div>
+  <div class="skye-speech-bubble">
+    <p class="skye-quote">hello, little heart...</p>
+  </div>
 </div>
 
 <script src="main.js"></script>
