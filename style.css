@@ -373,7 +373,7 @@ body {
 .postcard.postcard-bottom { left: 50%; top: auto; bottom: -140px; transform: translateX(-50%); }
 .postcard.visible { left: 12px; pointer-events: auto; }
 .postcard.postcard-right.visible { left: auto; right: 12px; }
-.postcard.postcard-bottom.visible { bottom: 80px; }
+.postcard.postcard-bottom.visible { left: 50%; right: auto; transform: translateX(-50%); bottom: 80px; }
 
 .postcard-inner {
   width: 100%; height: 100%; position: relative;
