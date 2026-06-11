@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>For Disa — always</title>
+  <meta name="description" content="A love letter, written in code." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500;1,600&family=Lato:wght@300;400&family=Great+Vibes&family=Reenie+Beanie&display=swap" rel="stylesheet" />
@@ -11,30 +12,31 @@
 </head>
 <body>
 
-<!-- Custom cursor -->
+<!-- Ambient layers -->
+<div id="grain-overlay" aria-hidden="true"></div>
+<canvas id="particle-canvas" aria-hidden="true"></canvas>
 <div id="cursor"></div>
 <div id="cursor-ring"></div>
 
-<!-- Particle canvas -->
-<canvas id="particle-canvas"></canvas>
-
-<!-- Watercolor canvas -->
-<canvas id="watercolor-canvas"></canvas>
+<!-- Scroll progress -->
+<div id="scroll-progress" aria-hidden="true">
+  <svg viewBox="0 0 36 36">
+    <circle class="progress-bg" cx="18" cy="18" r="15.9"/>
+    <circle class="progress-fill" cx="18" cy="18" r="15.9"/>
+  </svg>
+  <span class="progress-heart">♡</span>
+</div>
 
 <!-- ════════════════════════════════════════
      ENVELOPE INTRO
      ════════════════════════════════════════ -->
 <div id="envelope-scene">
-  <div style="display:flex;flex-direction:column;align-items:center;gap:20px;">
+  <div class="envelope-glow"></div>
+  <div class="envelope-center">
     <div class="envelope-wrap" role="button" aria-label="Open the letter" tabindex="0">
-
-      <!-- floating hearts around envelope -->
-      <div class="env-hearts"></div>
-
       <div class="envelope-body">
-        <!-- SVG flap -->
         <div class="envelope-flap">
-          <svg viewBox="0 0 340 105" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+          <svg viewBox="0 0 340 105" preserveAspectRatio="none">
             <defs>
               <linearGradient id="flapGrad" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stop-color="#fde0eb"/>
@@ -45,507 +47,426 @@
             <path d="M0,0 L170,105 L340,0" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
           </svg>
         </div>
-
-        <!-- inside envelope diagonals (decoration) -->
-        <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0.18;" viewBox="0 0 340 210" preserveAspectRatio="none">
+        <svg class="envelope-inner-lines" viewBox="0 0 340 210" preserveAspectRatio="none">
           <line x1="0" y1="210" x2="170" y2="105" stroke="#C47A8A" stroke-width="1"/>
           <line x1="340" y1="210" x2="170" y2="105" stroke="#C47A8A" stroke-width="1"/>
         </svg>
-
-        <!-- envelope label front -->
         <div class="envelope-label-front">For Disa</div>
-
-        <!-- wax seal -->
         <div class="wax-seal-container">
           <div class="wax-seal-half seal-left">
-            <svg viewBox="0 0 26 52" xmlns="http://www.w3.org/2000/svg">
-              <path d="M26,2 C12,2 2,12 2,26 C2,40 12,50 26,50 L26,2 Z" fill="#C47A8A"/>
-              <path d="M26,34 C26,34 14,26 14,20 C14,15.5 17.6,13 21,14 C23,14.6 24.8,16 26,18 Z" fill="rgba(255,255,255,0.9)"/>
-              <path d="M26,2 C13,2 3,11 3,25 C3,39 13,49 26,49" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
-            </svg>
+            <svg viewBox="0 0 26 52"><path d="M26,2 C12,2 2,12 2,26 C2,40 12,50 26,50 L26,2 Z" fill="#C47A8A"/><path d="M26,34 C26,34 14,26 14,20 C14,15.5 17.6,13 21,14 C23,14.6 24.8,16 26,18 Z" fill="rgba(255,255,255,0.9)"/><path d="M26,2 C13,2 3,11 3,25 C3,39 13,49 26,49" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1"/></svg>
           </div>
           <div class="wax-seal-half seal-right">
-            <svg viewBox="26 0 26 52" xmlns="http://www.w3.org/2000/svg">
-              <path d="M26,2 C40,2 50,12 50,26 C50,40 40,50 26,50 L26,2 Z" fill="#C47A8A"/>
-              <path d="M26,34 C26,34 38,26 38,20 C38,15.5 34.4,13 31,14 C29,14.6 27.2,16 26,18 Z" fill="rgba(255,255,255,0.9)"/>
-              <path d="M26,2 C39,2 49,11 49,25 C49,39 39,49 26,49" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
-            </svg>
+            <svg viewBox="26 0 26 52"><path d="M26,2 C40,2 50,12 50,26 C50,40 40,50 26,50 L26,2 Z" fill="#C47A8A"/><path d="M26,34 C26,34 38,26 38,20 C38,15.5 34.4,13 31,14 C29,14.6 27.2,16 26,18 Z" fill="rgba(255,255,255,0.9)"/><path d="M26,2 C39,2 49,11 49,25 C49,39 39,49 26,49" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1"/></svg>
           </div>
         </div>
-
-        <!-- letter peeking out -->
         <div class="letter-peek">
           <p class="letter-peek-text">for you,<br>always</p>
         </div>
-      </div><!-- /envelope-body -->
-    </div><!-- /envelope-wrap -->
-
+      </div>
+    </div>
     <p class="envelope-hint">tap to open</p>
   </div>
 </div>
 
 <!-- ════════════════════════════════════════
-     MAIN CONTENT (hidden until envelope opens)
+     MAIN CONTENT
      ════════════════════════════════════════ -->
 <div id="main-content">
 
-  <div id="paper-unfold" class="paper-unfold" aria-hidden="true">
-    <div class="paper-sheet">
-      <div class="paper-fold"></div>
-      <div class="paper-content">
-        <span class="paper-label">tiny notes</span>
-        <p>every scroll peels open a little memory</p>
+  <!-- ── HERO ── -->
+  <section id="hero" class="page-section">
+    <div class="parallax-orb orb-1"></div>
+    <div class="parallax-orb orb-2"></div>
+    <div class="parallax-orb orb-3"></div>
+    <span class="hero-date reveal-up" data-delay="0.4">a letter, just for you</span>
+    <h1 class="hero-name reveal-up" data-delay="0.7">
+      For <em>Disa.</em>
+    </h1>
+    <p class="hero-subtitle reveal-up" data-delay="1.2">
+      Not because I always find the right words —<br>
+      but because you deserve to know.
+    </p>
+    <div class="scroll-cue">
+      <div class="scroll-thread"></div>
+      <span>read slowly</span>
+    </div>
+  </section>
+
+  <div class="page-crease"></div>
+
+  <!-- ── LETTER I ── -->
+  <section class="letter-section page-section">
+    <div class="section-bg tone-warm"></div>
+    <div class="section-inner">
+      <div class="reveal-up">
+        <span class="letter-tag">a soft beginning</span>
+        <p class="letter-text">
+          I don't know how to start a love letter without
+          sounding like I'm trying too hard — so I'll just
+          be honest instead.<br><br>
+          <em>You make everything feel warmer.</em>
+          Even the ordinary days. Even the difficult ones.
+        </p>
+        <p class="letter-note">I think about this more than you know</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hidden Postcard 1 -->
+  <div class="postcard" data-trigger-section="2">
+    <div class="postcard-inner">
+      <div class="postcard-front">
+        <div class="postcard-stamp">♡</div>
+        <p class="postcard-msg">wish you were here</p>
+        <span class="postcard-hint">tap to flip</span>
+      </div>
+      <div class="postcard-back">
+        <div class="postcard-photo-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <span>your photo</span>
+        </div>
+        <p class="postcard-back-note">our little secret ✧</p>
       </div>
     </div>
   </div>
 
-  <!-- ── HERO ── -->
-  <section id="hero" class="page-section" data-paper-label="a soft opening" data-paper-copy="a little paper opens when the next thought arrives." data-edge-note="meow meow" data-edge-note-pos="top-left">
-    <div class="paper-fold-wrapper">
-      <div class="paper-shadow-overlay"></div>
-      <div class="hero-aurora"></div>
-      <span class="hero-date">a letter, just for you</span>
-      <h1 class="hero-name">
-        For
-        <em>Disa.</em>
-      </h1>
-      <p class="hero-subtitle">
-        Not because I always find the right words —<br>
-        but because you deserve to know.
-      </p>
-      <div class="fun-fact-bubble">fun fact: click anywhere and tiny hearts will explode ✦</div>
-      <div class="scroll-cue">
-        <div class="scroll-thread"></div>
-        <span>read slowly</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── LETTER I ── -->
-  <section class="letter-section page-section" data-paper-label="a tender note" data-paper-copy="the quiet things gather at the edge and wait to be found." data-edge-note="khapp" data-edge-note-pos="bottom-right">
-    <div class="paper-fold-wrapper">
-      <div class="paper-shadow-overlay"></div>
-      <div class="section-inner">
-        <div class="reveal-block">
-          <span class="letter-tag">a soft beginning</span>
-          <p class="letter-text">
-            I don't know how to start a love letter without
-            sounding like I'm trying too hard — so I'll just
-            be honest instead.<br><br>
-            <em>You make everything feel warmer.</em>
-            Even the ordinary days. Even the difficult ones.
-          </p>
-          <p class="letter-note">I think about this more than you know</p>
-        </div>
-      </div>
-    </div>
-  </section>
+  <div class="page-crease"></div>
 
   <!-- ── LANDSCAPE PHOTOS ── -->
-  <section class="photo-section page-section" data-paper-label="a little frame" data-paper-copy="some memories arrive slowly, like a folded page being opened." data-edge-note="nod off" data-edge-note-pos="bottom-left">
-    <div class="paper-fold-wrapper">
-      <div class="paper-shadow-overlay"></div>
-      <div class="section-inner">
-        <h2 class="section-title">us, in moments</h2>
+  <section class="photo-section page-section">
+    <div class="section-bg"></div>
+    <div class="section-inner">
+      <h2 class="section-title reveal-up">us, in moments</h2>
+    </div>
+    <div class="photo-wall">
+      <div class="polaroid" data-src="" data-caption="Some moments don't need captions" style="width:200px;">
+        <div class="polaroid-img"><div class="polaroid-img-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>photo</span></div></div>
+        <span class="polaroid-caption">some moment</span>
       </div>
-
-      <div class="photo-wall">
-        <!--
-          HOW TO ADD PHOTOS:
-          1. Replace data-src="..." with your image path (e.g. data-src="photos/01.jpg")
-          2. Update data-caption with your caption
-          3. Remove the <div class="polaroid-img-placeholder"> and add:
-                <div class="polaroid-img"><img src="photos/01.jpg" alt="..." /></div>
-          4. For portrait photos add class="polaroid portrait"
-        -->
-
-        <div class="polaroid"
-             data-src=""
-             data-caption="Some moments don't need captions"
-             style="width:200px;">
-          <div class="polaroid-img">
-            <div class="polaroid-img-placeholder">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-              <span>photo</span>
-            </div>
-          </div>
-          <span class="polaroid-caption">some moment</span>
-        </div>
-
-        <div class="polaroid"
-             data-src=""
-             data-caption="I kept stealing glances at you"
-             style="width:175px;">
-          <div class="polaroid-img">
-            <div class="polaroid-img-placeholder">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-              <span>photo</span>
-            </div>
-          </div>
-          <span class="polaroid-caption">stealing glances</span>
-        </div>
-
-        <div class="polaroid"
-             data-src=""
-             data-caption="We didn't need to say anything"
-             style="width:220px;">
-          <div class="polaroid-img">
-            <div class="polaroid-img-placeholder">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-              <span>photo</span>
-            </div>
-          </div>
-          <span class="polaroid-caption">already said</span>
-        </div>
-
-        <div class="polaroid"
-             data-src=""
-             data-caption="Every little thing about this day"
-             style="width:190px;">
-          <div class="polaroid-img">
-            <div class="polaroid-img-placeholder">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-              <span>photo</span>
-            </div>
-          </div>
-          <span class="polaroid-caption">still carry it</span>
-        </div>
-
+      <div class="polaroid" data-src="" data-caption="I kept stealing glances at you" style="width:175px;">
+        <div class="polaroid-img"><div class="polaroid-img-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>photo</span></div></div>
+        <span class="polaroid-caption">stealing glances</span>
+      </div>
+      <div class="polaroid" data-src="" data-caption="We didn't need to say anything" style="width:220px;">
+        <div class="polaroid-img"><div class="polaroid-img-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>photo</span></div></div>
+        <span class="polaroid-caption">already said</span>
+      </div>
+      <div class="polaroid" data-src="" data-caption="Every little thing about this day" style="width:190px;">
+        <div class="polaroid-img"><div class="polaroid-img-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>photo</span></div></div>
+        <span class="polaroid-caption">still carry it</span>
       </div>
     </div>
   </section>
+
+  <div class="page-crease"></div>
 
   <!-- ── MEMORY TIMELINE ── -->
-  <section class="timeline-section page-section" data-paper-label="our shared hours" data-paper-copy="every hour with you is carved into my heart.">
-    <div class="paper-fold-wrapper">
-      <div class="paper-shadow-overlay"></div>
-      <div class="section-inner">
-        <h2 class="section-title">our shared hours</h2>
-        <div class="timeline-container">
-          <div class="timeline-line"></div>
-          
-          <div class="timeline-item" data-index="0">
-            <div class="timeline-badge"><span>♥</span></div>
-            <div class="timeline-card-wrapper">
-              <div class="timeline-card">
-                <div class="card-crease"></div>
-                <div class="timeline-date">the first hello</div>
-                <h3 class="timeline-card-title">where it all started</h3>
-                <p class="timeline-card-copy">I still remember the jittery feeling before talking to you. A simple hello that ended up changing my entire world.</p>
-                <div class="timeline-card-photo-placeholder">
-                  <span class="photo-desc">✧ first light ✧</span>
-                </div>
-              </div>
-            </div>
+  <section class="timeline-section page-section">
+    <div class="section-bg tone-warm"></div>
+    <div class="section-inner">
+      <h2 class="section-title reveal-up">our shared hours</h2>
+      <div class="timeline-container">
+        <div class="timeline-line"></div>
+        <div class="timeline-item" data-index="0">
+          <div class="timeline-badge"><span>♥</span></div>
+          <div class="timeline-card">
+            <div class="timeline-date">the first hello</div>
+            <h3 class="timeline-card-title">where it all started</h3>
+            <p class="timeline-card-copy">I still remember the jittery feeling before talking to you. A simple hello that ended up changing my entire world.</p>
+            <div class="timeline-card-photo"><span>✧ first light ✧</span></div>
           </div>
-
-          <div class="timeline-item" data-index="1">
-            <div class="timeline-badge"><span>♥</span></div>
-            <div class="timeline-card-wrapper">
-              <div class="timeline-card">
-                <div class="card-crease"></div>
-                <div class="timeline-date">late night whispers</div>
-                <h3 class="timeline-card-title">losing track of time</h3>
-                <p class="timeline-card-copy">Hours felt like minutes, talking about everything and nothing. I realized then that I didn't want to fall asleep if it meant not talking to you.</p>
-                <div class="timeline-card-photo-placeholder">
-                  <span class="photo-desc">✧ starlight conversations ✧</span>
-                </div>
-              </div>
-            </div>
+        </div>
+        <div class="timeline-item" data-index="1">
+          <div class="timeline-badge"><span>♥</span></div>
+          <div class="timeline-card">
+            <div class="timeline-date">late night whispers</div>
+            <h3 class="timeline-card-title">losing track of time</h3>
+            <p class="timeline-card-copy">Hours felt like minutes, talking about everything and nothing. I realized then that I didn't want to fall asleep if it meant not talking to you.</p>
+            <div class="timeline-card-photo"><span>✧ starlight conversations ✧</span></div>
           </div>
-
-          <div class="timeline-item" data-index="2">
-            <div class="timeline-badge"><span>♥</span></div>
-            <div class="timeline-card-wrapper">
-              <div class="timeline-card">
-                <div class="card-crease"></div>
-                <div class="timeline-date">through the storms</div>
-                <h3 class="timeline-card-title">holding on tight</h3>
-                <p class="timeline-card-copy">We fought, we got messy, and we made mistakes. But we stayed. Because the thought of letting go of you was far more terrifying than any storm.</p>
-                <div class="timeline-card-photo-placeholder">
-                  <span class="photo-desc">✧ shelter in the rain ✧</span>
-                </div>
-              </div>
-            </div>
+        </div>
+        <div class="timeline-item" data-index="2">
+          <div class="timeline-badge"><span>♥</span></div>
+          <div class="timeline-card">
+            <div class="timeline-date">through the storms</div>
+            <h3 class="timeline-card-title">holding on tight</h3>
+            <p class="timeline-card-copy">We fought, we got messy, and we made mistakes. But we stayed. Because the thought of letting go was far more terrifying than any storm.</p>
+            <div class="timeline-card-photo"><span>✧ shelter in the rain ✧</span></div>
           </div>
         </div>
       </div>
     </div>
   </section>
+
+  <!-- Hidden Postcard 2 -->
+  <div class="postcard postcard-right" data-trigger-section="4">
+    <div class="postcard-inner">
+      <div class="postcard-front">
+        <div class="postcard-stamp">✿</div>
+        <p class="postcard-msg">thinking of you</p>
+        <span class="postcard-hint">tap to flip</span>
+      </div>
+      <div class="postcard-back">
+        <p class="postcard-back-text">Every time I close my eyes, I see your smile. And honestly? That's enough to make everything okay.</p>
+        <span class="postcard-back-sig">— s</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-crease"></div>
 
   <!-- ── LETTER II ── -->
   <section class="letter-section page-section">
-    <div class="paper-fold-wrapper">
-      <div class="paper-shadow-overlay"></div>
-      <div class="section-inner">
-        <div class="reveal-block">
-          <span class="letter-tag">the honest part</span>
-          <p class="letter-text">
-            I know I'm not perfect.
-            I can say the wrong thing.
-            I can get it wrong.<br><br>
-            <em>But here's what I know for certain:</em>
-            no argument, no silence, no messy chapter —
-            none of it changes how deeply I care about you.
-            <strong>Not even a little.</strong>
-          </p>
-          <p class="letter-note">this part I mean more than anything else</p>
-        </div>
+    <div class="section-bg"></div>
+    <div class="section-inner">
+      <div class="reveal-up">
+        <span class="letter-tag">the honest part</span>
+        <p class="letter-text">
+          I know I'm not perfect.
+          I can say the wrong thing.
+          I can get it wrong.<br><br>
+          <em>But here's what I know for certain:</em>
+          no argument, no silence, no messy chapter —
+          none of it changes how deeply I care about you.
+          <strong>Not even a little.</strong>
+        </p>
+        <p class="letter-note">this part I mean more than anything else</p>
       </div>
     </div>
   </section>
+
+  <div class="page-crease"></div>
 
   <!-- ── CALLIGRAPHY DESK ── -->
-  <section class="calligraphy-section page-section" data-paper-label="from the inkwell" data-paper-copy="watch the words write themselves onto the paper.">
-    <div class="paper-fold-wrapper">
-      <div class="paper-shadow-overlay"></div>
-      <div class="section-inner">
-        <div class="desk-paper">
-          <div class="paper-texture-overlay"></div>
-          <div class="calligraphy-feather">✒️</div>
-          <div class="written-text-container">
-            <p class="written-line written-line-1"></p>
-            <p class="written-line written-line-2"></p>
-            <p class="written-line written-line-3"></p>
-          </div>
+  <section class="calligraphy-section page-section">
+    <div class="section-bg tone-desk"></div>
+    <div class="section-inner">
+      <div class="desk-paper">
+        <div class="paper-lines" aria-hidden="true"></div>
+        <div class="calligraphy-hand" aria-hidden="true">
+          <svg viewBox="0 0 120 160" xmlns="http://www.w3.org/2000/svg">
+            <path d="M95,5 C85,8 70,25 62,50 C58,62 56,72 55,80 L55,80 C72,42 82,22 95,5 Z" fill="#3d2a1a" opacity="0.85"/>
+            <path d="M95,5 C90,12 80,30 72,52 C68,62 65,70 63,76 L55,80 C56,72 58,62 62,50 C70,25 85,8 95,5 Z" fill="#5a3d28" opacity="0.7"/>
+            <line x1="55" y1="80" x2="38" y2="130" stroke="#4a3020" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="55" y1="80" x2="38" y2="130" stroke="#6b4a35" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M38,130 L34,145 L38,142 L42,145 Z" fill="#b8860b"/>
+            <path d="M38,130 L36,138 L38,136 L40,138 Z" fill="#daa520"/>
+            <circle cx="38" cy="148" r="1.5" fill="#2b1f23" opacity="0.6"/>
+            <path d="M20,108 C22,100 28,95 35,94 C38,93.5 40,94 42,96 L48,88 C50,85 54,84 56,86 C58,88 57,92 55,95 L50,100 C52,99 55,99 56,101 C57,103 56,106 54,108 L48,114 C50,113 52,113 53,115 C54,117 53,120 51,122 L42,132 C38,137 32,138 26,135 C20,132 17,126 18,120 L20,108 Z" fill="#e8c4a0"/>
+            <path d="M35,94 C38,93.5 40,94 42,96 L44,92" fill="none" stroke="#d4a882" stroke-width="0.8"/>
+            <path d="M48,88 C50,85 54,84 56,86" fill="none" stroke="#d4a882" stroke-width="0.8"/>
+            <path d="M22,106 C24,100 30,96 36,95" fill="none" stroke="#d4a882" stroke-width="0.6" opacity="0.5"/>
+            <ellipse cx="42" cy="100" rx="3" ry="1.5" fill="#d4a882" opacity="0.4"/>
+            <ellipse cx="50" cy="96" rx="2.5" ry="1.2" fill="#d4a882" opacity="0.3"/>
+            <path d="M18,120 C17,126 20,132 26,135 C28,136 30,137 32,137" fill="none" stroke="#c9a57a" stroke-width="0.8" opacity="0.5"/>
+          </svg>
+        </div>
+        <div class="written-text-container">
+          <p class="written-line written-line-1"></p>
+          <p class="written-line written-line-2"></p>
+          <p class="written-line written-line-3"></p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ── QUOTE ── -->
-  <section class="quote-section page-section" data-paper-label="for the heart" data-paper-copy="the gentlest truths always seem to settle into the corners." data-edge-note="rawr" data-edge-note-pos="top-right">
-    <div class="paper-fold-wrapper">
-      <div class="paper-shadow-overlay"></div>
-      <div class="quote-glow"></div>
-      <div class="section-inner">
-        <span class="quote-opening reveal-block">"</span>
-        <p class="quote-body reveal-block">
-          You have always been, and will always be,
-          <em>unbelievably special</em> to me.
-        </p>
-        <p class="quote-sig reveal-block">— your Skye</p>
+  <div class="page-crease"></div>
+
+  <!-- ── REASONS I LOVE YOU ── -->
+  <section class="reasons-section page-section">
+    <div class="section-bg tone-warm"></div>
+    <div class="section-inner">
+      <h2 class="section-title reveal-up">reasons I love you</h2>
+      <p class="reasons-subtitle reveal-up">a few of them, anyway. the full list would crash your browser.</p>
+      <div class="reasons-grid">
+        <div class="reason-card reveal-up"><span class="reason-num">01</span><p>The way you laugh when you're trying not to.</p></div>
+        <div class="reason-card reveal-up"><span class="reason-num">02</span><p>How you make the smallest moments feel like the biggest ones.</p></div>
+        <div class="reason-card reveal-up"><span class="reason-num">03</span><p>Your stubbornness. Yes, even that.</p></div>
+        <div class="reason-card reveal-up"><span class="reason-num">04</span><p>The voice you use when you're being extra soft.</p></div>
+        <div class="reason-card reveal-up"><span class="reason-num">05</span><p>You chose me. Even on the difficult days.</p></div>
+        <div class="reason-card reveal-up"><span class="reason-num">06</span><p>You make silence feel like the safest place in the world.</p></div>
       </div>
     </div>
   </section>
+
+  <!-- Hidden Postcard 3 -->
+  <div class="postcard postcard-bottom" data-trigger-section="7">
+    <div class="postcard-inner">
+      <div class="postcard-front">
+        <div class="postcard-stamp">🌸</div>
+        <p class="postcard-msg">a secret note</p>
+        <span class="postcard-hint">tap to flip</span>
+      </div>
+      <div class="postcard-back">
+        <p class="postcard-back-text">You have no idea how many times I've re-read our old conversations just to smile at 2am.</p>
+        <span class="postcard-back-sig">— yours</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-crease"></div>
+
+  <!-- ── QUOTE ── -->
+  <section class="quote-section page-section">
+    <div class="section-bg"></div>
+    <div class="quote-glow"></div>
+    <div class="section-inner">
+      <span class="quote-opening reveal-up">"</span>
+      <p class="quote-body reveal-up">
+        You have always been, and will always be,
+        <em>unbelievably special</em> to me.
+      </p>
+      <p class="quote-sig reveal-up">— your Skye</p>
+    </div>
+  </section>
+
+  <div class="page-crease"></div>
 
   <!-- ── PORTRAIT PHOTOS ── -->
   <section class="photo-section page-section">
-    <div class="paper-fold-wrapper">
-      <div class="paper-shadow-overlay"></div>
-      <div class="section-inner">
-        <h2 class="section-title">just you</h2>
+    <div class="section-bg tone-warm"></div>
+    <div class="section-inner">
+      <h2 class="section-title reveal-up">just you</h2>
+    </div>
+    <div class="photo-wall">
+      <div class="polaroid portrait" data-src="" data-caption="radiant" style="width:150px;">
+        <div class="polaroid-img"><div class="polaroid-img-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>portrait</span></div></div>
+        <span class="polaroid-caption">radiant.</span>
       </div>
-
-      <div class="photo-wall">
-
-        <div class="polaroid portrait"
-             data-src=""
-             data-caption="radiant"
-             style="width:150px;">
-          <div class="polaroid-img">
-            <div class="polaroid-img-placeholder">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-              <span>portrait</span>
-            </div>
-          </div>
-          <span class="polaroid-caption">radiant.</span>
-        </div>
-
-        <div class="polaroid portrait"
-             data-src=""
-             data-caption="this laugh"
-             style="width:160px;">
-          <div class="polaroid-img">
-            <div class="polaroid-img-placeholder">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-              <span>portrait</span>
-            </div>
-          </div>
-          <span class="polaroid-caption">this laugh.</span>
-        </div>
-
-        <div class="polaroid portrait"
-             data-src=""
-             data-caption="my favourite face"
-             style="width:145px;">
-          <div class="polaroid-img">
-            <div class="polaroid-img-placeholder">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-              <span>portrait</span>
-            </div>
-          </div>
-          <span class="polaroid-caption">my favourite face.</span>
-        </div>
-
+      <div class="polaroid portrait" data-src="" data-caption="this laugh" style="width:160px;">
+        <div class="polaroid-img"><div class="polaroid-img-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>portrait</span></div></div>
+        <span class="polaroid-caption">this laugh.</span>
+      </div>
+      <div class="polaroid portrait" data-src="" data-caption="my favourite face" style="width:145px;">
+        <div class="polaroid-img"><div class="polaroid-img-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>portrait</span></div></div>
+        <span class="polaroid-caption">my favourite face.</span>
       </div>
     </div>
   </section>
+
+  <div class="page-crease"></div>
 
   <!-- ── LETTER III ── -->
   <section class="letter-section page-section">
-    <div class="paper-fold-wrapper">
-      <div class="paper-shadow-overlay"></div>
-      <div class="section-inner">
-        <div class="reveal-block">
-          <span class="letter-tag">what I want you to feel</span>
-          <p class="letter-text">
-            Whenever life gets heavy — I want you to feel this:
-            <em>you are seen.</em><br><br>
-            You are held, even across distance, even through
-            silence. You are someone I choose, every single day,
-            without hesitation.
-          </p>
-          <p class="letter-note">quietly, always</p>
+    <div class="section-bg"></div>
+    <div class="section-inner">
+      <div class="reveal-up">
+        <span class="letter-tag">what I want you to feel</span>
+        <p class="letter-text">
+          Whenever life gets heavy — I want you to feel this:
+          <em>you are seen.</em><br><br>
+          You are held, even across distance, even through
+          silence. You are someone I choose, every single day,
+          without hesitation.
+        </p>
+        <p class="letter-note">quietly, always</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="page-crease"></div>
+
+  <!-- ── CONSTELLATION CANVAS ── -->
+  <section class="constellation-section page-section">
+    <div class="section-inner" style="position:relative; z-index:2;">
+      <h2 class="section-title reveal-up" style="color:var(--cream);">the sky of us</h2>
+      <p class="constellation-hint reveal-up">tap the stars to trace our constellation</p>
+      <div class="canvas-container">
+        <canvas id="constellation-canvas"></canvas>
+        <div id="constellation-letter" class="constellation-letter">
+          <div class="letter-seal">♥</div>
+          <h3 class="letter-title">written in the stars</h3>
+          <p class="letter-body">I know I can get it wrong, and I know life is messy, but my love for you is as constant as the stars in the night sky. You are my home, Disa. Always.</p>
+          <span class="letter-signature">— Your Skye</span>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ── CONSTELLATION CANVAS ── -->
-  <section class="constellation-section page-section" data-paper-label="the sky of us" data-paper-copy="connect the stars to reveal what's written in the sky.">
-    <div class="paper-fold-wrapper">
-      <div class="paper-shadow-overlay"></div>
-      <div class="section-inner" style="position:relative; z-index:2;">
-        <h2 class="section-title" style="color:var(--cream);">the sky of us</h2>
-        <p class="constellation-hint">tap the shining stars to connect them and find the secret constellation</p>
-        
-        <div class="canvas-container">
-          <canvas id="constellation-canvas"></canvas>
-          <div id="constellation-letter" class="constellation-letter">
-            <div class="letter-seal">♥</div>
-            <h3 class="letter-title">written in the stars</h3>
-            <p class="letter-body">I know I can get it wrong, and I know life is messy, but my love for you is as constant as the stars in the night sky. You are my home, Disa. Always.</p>
-            <span class="letter-signature">— Your Skye</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+  <div class="page-crease"></div>
 
   <!-- ── VIDEO REELS ── -->
   <section class="reel-section page-section">
-    <div class="paper-fold-wrapper">
-      <div class="paper-shadow-overlay"></div>
-      <div class="section-inner">
-        <h2 class="section-title">moments in motion</h2>
+    <div class="section-bg tone-warm"></div>
+    <div class="section-inner">
+      <h2 class="section-title reveal-up">moments in motion</h2>
+    </div>
+    <div class="reel-grid">
+      <div class="reel-item reveal-up">
+        <div class="reel-frame" role="button" aria-label="play video">
+          <div class="reel-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg><span>video / reel</span></div>
+        </div>
+        <p class="reel-caption">Proof that the best moments<br><em>look even better in motion.</em></p>
       </div>
-
-      <div class="reel-grid">
-        <!--
-          HOW TO ADD VIDEOS:
-          Replace <div class="reel-placeholder"> with:
-            <video src="videos/01.mp4" autoplay loop muted playsinline></video>
-          and remove the placeholder div.
-        -->
-
-        <div class="reel-item">
-          <div class="reel-frame" role="button" aria-label="play video">
-            <div class="reel-placeholder">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
-              <span>video / reel</span>
-            </div>
-          </div>
-          <p class="reel-caption">Proof that the best moments<br><em>look even better in motion.</em></p>
+      <div class="reel-item reveal-up">
+        <div class="reel-frame" role="button" aria-label="play video">
+          <div class="reel-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg><span>video / reel</span></div>
         </div>
-
-        <div class="reel-item">
-          <div class="reel-frame" role="button" aria-label="play video">
-            <div class="reel-placeholder">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
-              <span>video / reel</span>
-            </div>
-          </div>
-          <p class="reel-caption">I press replay on this one<br><em>more than I should.</em></p>
-        </div>
+        <p class="reel-caption">I press replay on this one<br><em>more than I should.</em></p>
       </div>
     </div>
   </section>
 
-  <div class="soft-divider reveal-block">✦ &nbsp; ✦ &nbsp; ✦</div>
+  <div class="soft-divider reveal-up">✦ &nbsp; ✦ &nbsp; ✦</div>
 
   <!-- ── CLOSING ── -->
   <section class="closing-section page-section">
-    <div class="paper-fold-wrapper">
-      <div class="paper-shadow-overlay"></div>
-      <div class="section-inner">
-        <h2 class="closing-headline reveal-block">
-          Always <em>you.</em><br>
-          Always <em>this.</em>
-        </h2>
-        <p class="closing-body reveal-block">
-          Life is imperfect. We are imperfect.<br>
-          But what I feel for you — that's not.<br>
-          That's the steadiest, truest thing I know.<br><br>
-          No matter what happens,<br>
-          <em>you matter to me more than words can explain.</em>
-        </p>
-        <p class="signature reveal-block">
-          — your Skye <span class="heart-pulse">♡</span>
-        </p>
-        <p class="made-with reveal-block">made with every quiet corner of my heart</p>
-      </div>
+    <div class="section-bg"></div>
+    <div class="parallax-orb orb-closing-1"></div>
+    <div class="parallax-orb orb-closing-2"></div>
+    <div class="section-inner">
+      <h2 class="closing-headline reveal-up">
+        Always <em>you.</em><br>
+        Always <em>this.</em>
+      </h2>
+      <p class="closing-body reveal-up">
+        Life is imperfect. We are imperfect.<br>
+        But what I feel for you — that's not.<br>
+        That's the steadiest, truest thing I know.<br><br>
+        No matter what happens,<br>
+        <em>you matter to me more than words can explain.</em>
+      </p>
+      <p class="signature reveal-up">
+        — your Skye <span class="heart-pulse">♡</span>
+      </p>
+      <p class="made-with reveal-up">made with every quiet corner of my heart</p>
     </div>
   </section>
 
-  <footer>
-    for disa &nbsp;·&nbsp; always &nbsp;·&nbsp; your skye
-  </footer>
+  <footer>for disa &nbsp;·&nbsp; always &nbsp;·&nbsp; your skye</footer>
 
 </div><!-- /main-content -->
 
 <!-- ── LIGHTBOX ── -->
 <div id="lightbox" role="dialog" aria-modal="true">
   <div class="lightbox-backdrop"></div>
-  <div class="lightbox-card">
-    <!-- populated by JS -->
-  </div>
-  <button id="lb-prev" aria-label="Previous">
-    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-  </button>
-  <button id="lb-next" aria-label="Next">
-    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-  </button>
+  <div class="lightbox-card"></div>
+  <button id="lb-prev" aria-label="Previous"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+  <button id="lb-next" aria-label="Next"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
 </div>
 
 <!-- ── MUSIC PLAYER ── -->
 <div id="music-player">
-  <button class="p-btn" id="p-prev" aria-label="Previous">
-    <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
-  </button>
-  <button class="p-btn" id="p-play" aria-label="Play / Pause">
-    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-  </button>
-  <button class="p-btn" id="p-next" aria-label="Next">
-    <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zm2-8.14 5.02 3.64L8 16.14V9.86zM16 6h2v12h-2z"/></svg>
-  </button>
-
-  <!-- EQ visualizer bars -->
+  <button class="p-btn" id="p-prev" aria-label="Previous"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg></button>
+  <button class="p-btn" id="p-play" aria-label="Play / Pause"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+  <button class="p-btn" id="p-next" aria-label="Next"><svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zm2-8.14 5.02 3.64L8 16.14V9.86zM16 6h2v12h-2z"/></svg></button>
   <div class="p-eq" aria-hidden="true">
-    <div class="p-eq-bar" style="--h:5px;  --dur:0.55s; animation-delay:0s;"></div>
-    <div class="p-eq-bar" style="--h:12px; --dur:0.7s;  animation-delay:0.1s;"></div>
-    <div class="p-eq-bar" style="--h:8px;  --dur:0.45s; animation-delay:0.2s;"></div>
-    <div class="p-eq-bar" style="--h:14px; --dur:0.65s; animation-delay:0.05s;"></div>
-    <div class="p-eq-bar" style="--h:6px;  --dur:0.8s;  animation-delay:0.15s;"></div>
+    <div class="p-eq-bar" style="--h:5px;--dur:0.55s;animation-delay:0s;"></div>
+    <div class="p-eq-bar" style="--h:12px;--dur:0.7s;animation-delay:0.1s;"></div>
+    <div class="p-eq-bar" style="--h:8px;--dur:0.45s;animation-delay:0.2s;"></div>
+    <div class="p-eq-bar" style="--h:14px;--dur:0.65s;animation-delay:0.05s;"></div>
+    <div class="p-eq-bar" style="--h:6px;--dur:0.8s;animation-delay:0.15s;"></div>
   </div>
-
   <span id="p-title">♫ for you, always</span>
-
   <svg class="volume-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#C47A8A" stroke-width="2" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
   <input type="range" id="p-vol" min="0" max="1" step="0.05" value="0.65" aria-label="Volume" />
 </div>
 
-<!-- Floating Skye Companion -->
-<div id="skye-companion" class="skye-companion" role="img" aria-label="Skye Companion">
+<!-- Skye Companion -->
+<div id="skye-companion" class="skye-companion" role="img" aria-label="Skye">
   <div class="skye-cloud">
-    <svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">
-      <path d="M20,40 C10,40 5,30 15,20 C10,10 25,-5 40,5 C50,-5 70,-2 75,10 C85,5 95,15 90,25 C100,35 90,50 75,45 C70,55 50,58 35,50 C28,55 20,52 20,40 Z" fill="#ffffff" />
-      <circle cx="35" cy="28" r="2.5" fill="#5a5568"/>
-      <circle cx="55" cy="28" r="2.5" fill="#5a5568"/>
-      <ellipse cx="29" cy="32" rx="3.5" ry="2" fill="#ffccd5"/>
-      <ellipse cx="61" cy="32" rx="3.5" ry="2" fill="#ffccd5"/>
-      <path d="M43,32 Q45,34 47,32 Q49,34 51,32" fill="none" stroke="#5a5568" stroke-width="1.8" stroke-linecap="round"/>
-    </svg>
+    <svg viewBox="0 0 100 60"><path d="M20,40 C10,40 5,30 15,20 C10,10 25,-5 40,5 C50,-5 70,-2 75,10 C85,5 95,15 90,25 C100,35 90,50 75,45 C70,55 50,58 35,50 C28,55 20,52 20,40 Z" fill="#ffffff"/><circle cx="35" cy="28" r="2.5" fill="#5a5568"/><circle cx="55" cy="28" r="2.5" fill="#5a5568"/><ellipse cx="29" cy="32" rx="3.5" ry="2" fill="#ffccd5"/><ellipse cx="61" cy="32" rx="3.5" ry="2" fill="#ffccd5"/><path d="M43,32 Q45,34 47,32 Q49,34 51,32" fill="none" stroke="#5a5568" stroke-width="1.8" stroke-linecap="round"/></svg>
     <div class="skye-halo"></div>
   </div>
   <div class="skye-speech-bubble">
