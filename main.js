@@ -288,9 +288,19 @@ document.querySelectorAll('a, button, .polaroid, .reel-frame, .letter-seal, .rea
   const rotations = [-3.5,1.8,-1.2,2.6,-2.8,1.4,-0.8,3.1,-1.9,2.3];
   polaroids.forEach((p,i) => {
     const rot = rotations[i%rotations.length]; p.dataset.rot=rot;
-    p.style.transform = `translateY(30px) rotate(${rot}deg)`;
-    p.addEventListener('mouseenter', ()=>{ p.style.transform=`translateY(-8px) rotate(0deg) scale(1.04)`; });
-    p.addEventListener('mouseleave', ()=>{ p.style.transform=`translateY(0) rotate(${rot}deg) scale(1)`; });
+    if (p.classList.contains('stack-back')) {
+      p.style.transform = `translateY(-8px) rotate(${rot}deg)`;
+    } else {
+      p.style.transform = `translateY(30px) rotate(${rot}deg)`;
+    }
+    p.addEventListener('mouseenter', ()=>{
+      if (p.classList.contains('stack-back')) return;
+      p.style.transform=`translateY(-8px) rotate(0deg) scale(1.04)`;
+    });
+    p.addEventListener('mouseleave', ()=>{
+      if (p.classList.contains('stack-back')) return;
+      p.style.transform=`translateY(0) rotate(${rot}deg) scale(1)`;
+    });
   });
   const io = new IntersectionObserver(entries => {
     entries.forEach(e => {
@@ -349,30 +359,101 @@ document.querySelectorAll('a, button, .polaroid, .reel-frame, .letter-seal, .rea
    MUSIC PLAYER
    ══════════════════════════════════════════ */
 (function() {
-  const TRACKS=['music/01.mp3','music/02.mp3','music/03.mp3','music/04.mp3','music/05.mp3','music/06.mp3','music/07.mp3','music/08.mp3','music/09.mp3','music/10.mp3'];
-  async function getPlaylist(){try{const r=await fetch('/api/tracks');if(r.ok){const d=await r.json();return d.tracks||TRACKS;}}catch{}return TRACKS;}
-  let playlist=TRACKS.map((src,i)=>({src,title:src.replace('music/','').replace('.mp3','').replace(/^\d+[-_.\s]?/,'')||`Track ${i+1}`}));
+  const TRACKS=[
+    'songs/I Wanna Be Yours.mp3',
+    'songs/ruth b. - dandelions.mp3',
+    'songs/Say Yes to Heaven.mp3',
+    'songs/SEÑORITA.mp3',
+    'songs/Stephen Dawes - Teenage Dream.mp3',
+    'songs/Those Eyes - New West.mp3',
+    'songs/Until i found you.mp3',
+    'songs/𝑃𝑒𝑟𝑓𝑒𝑐𝑡 𝑏𝑦 𝐸𝑑 𝑆ℎ𝑒𝑒𝑟𝑎𝑛.mp3'
+  ];
+
+  function toTrackEntry(src, index) {
+    const raw = typeof src === 'string' ? src : '';
+    const fileName = raw.split('/').pop() || `Track ${index + 1}`;
+    const title = fileName.replace(/\.mp3$/i, '') || `Track ${index + 1}`;
+    const normalizedSrc = raw.startsWith('songs/') || raw.startsWith('music/') || raw.startsWith('/')
+      ? raw.replace(/^\/+/, '')
+      : `songs/${raw}`;
+    return { src: normalizedSrc, title };
+  }
+
+  async function getPlaylist(){
+    try {
+      const r=await fetch('/api/tracks');
+      if(r.ok){
+        const d=await r.json();
+        if(Array.isArray(d.tracks)&&d.tracks.length>0){
+          return d.tracks.map((src,i)=>toTrackEntry(src,i));
+        }
+      }
+    } catch {}
+    return TRACKS.map((src,i)=>toTrackEntry(src,i));
+  }
+
+  let playlist=TRACKS.map((src,i)=>toTrackEntry(src,i));
   let idx=0, playing=false;
   const audio=new Audio(); audio.volume=0.65;
   const playBtn=document.getElementById('p-play'), prevBtn=document.getElementById('p-prev'), nextBtn=document.getElementById('p-next');
   const titleEl=document.getElementById('p-title'), volEl=document.getElementById('p-vol'), eqBars=document.querySelectorAll('.p-eq-bar');
+  const playerEl=document.getElementById('music-player'), discEl=document.getElementById('p-disc');
   const PLAY_ICON='<path d="M8 5v14l11-7z"/>', PAUSE_ICON='<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+
   function setEQ(a){eqBars.forEach(b=>{b.style.animationPlayState=a?'running':'paused';});}
-  function updateTitle(){const n=playlist[idx].title||`♫ ${idx+1}`;titleEl.textContent='♫ '+(n.charAt(0).toUpperCase()+n.slice(1));}
-  function load(i,auto){idx=((i%playlist.length)+playlist.length)%playlist.length;audio.src=playlist[idx].src;updateTitle();if(auto)audio.play().then(()=>{playing=true;updatePlayBtn();setEQ(true);}).catch(()=>{});}
-  function updatePlayBtn(){playBtn.querySelector('svg').innerHTML=playing?PAUSE_ICON:PLAY_ICON;setEQ(playing);}
-  playBtn.addEventListener('click',()=>{if(!audio.src||audio.src===window.location.href){load(0,true);return;}if(playing){audio.pause();playing=false;}else{audio.play().then(()=>{playing=true;}).catch(()=>{});}updatePlayBtn();});
-  prevBtn.addEventListener('click',()=>load(idx-1,playing));
-  nextBtn.addEventListener('click',()=>load(idx+1,playing));
+  function setPlaybackState(a){
+    playing=a;
+    playerEl.classList.toggle('playing', a);
+    discEl.classList.toggle('playing', a);
+    playBtn.querySelector('svg').innerHTML=a?PAUSE_ICON:PLAY_ICON;
+    setEQ(a);
+  }
+  function updateTitle(){
+    const n=playlist[idx]?.title||`Track ${idx+1}`;
+    titleEl.textContent='♫ '+n;
+  }
+  function updateVolumeUI(){
+    const pct=Math.round(parseFloat(audio.volume||0)*100);
+    volEl.style.background=`linear-gradient(to right, var(--deep-rose) ${pct}%, rgba(196,122,138,0.22) ${pct}%)`;
+  }
+  function load(i,auto){
+    idx=((i%playlist.length)+playlist.length)%playlist.length;
+    audio.src=encodeURI(playlist[idx].src);
+    audio.load();
+    updateTitle();
+    updateVolumeUI();
+    if(auto){
+      audio.play().then(()=>setPlaybackState(true)).catch(()=>setPlaybackState(false));
+    } else {
+      setPlaybackState(false);
+    }
+  }
+
+  playBtn.addEventListener('click',()=>{
+    if(!audio.src||audio.src===window.location.href){load(0,true);return;}
+    if(playing){
+      audio.pause();
+      setPlaybackState(false);
+    } else {
+      audio.play().then(()=>setPlaybackState(true)).catch(()=>setPlaybackState(false));
+    }
+  });
+  prevBtn.addEventListener('click',()=>load(idx-1,true));
+  nextBtn.addEventListener('click',()=>load(idx+1,true));
   audio.addEventListener('ended',()=>load(idx+1,true));
-  volEl.addEventListener('input',()=>{audio.volume=parseFloat(volEl.value);const pct=Math.round(parseFloat(volEl.value)*100);volEl.style.background=`linear-gradient(to right, var(--deep-rose) ${pct}%, rgba(196,122,138,0.22) ${pct}%)`;});
+  audio.addEventListener('play',()=>setPlaybackState(true));
+  audio.addEventListener('pause',()=>{if(!audio.ended){setPlaybackState(false);}});
+  volEl.addEventListener('input',()=>{audio.volume=parseFloat(volEl.value);updateVolumeUI();});
+
   window.tryMusicPlay=()=>{if(!playing)load(0,true);};
+  updateVolumeUI();
   load(0,false);
-  setTimeout(()=>{audio.play().then(()=>{playing=true;updatePlayBtn();setEQ(true);}).catch(()=>{});},600);
-  const onInteract=()=>{if(!playing)audio.play().then(()=>{playing=true;updatePlayBtn();setEQ(true);}).catch(()=>{});};
+  setTimeout(()=>{audio.play().then(()=>setPlaybackState(true)).catch(()=>setPlaybackState(false));},600);
+  const onInteract=()=>{if(!playing)audio.play().then(()=>setPlaybackState(true)).catch(()=>setPlaybackState(false));};
   document.addEventListener('click',onInteract,{once:true});
   document.addEventListener('touchstart',onInteract,{once:true});
-  getPlaylist().then(tracks=>{if(Array.isArray(tracks)&&tracks.length>0){playlist=tracks.map((src,i)=>{const n=src.replace(/^music\//,'').replace(/\.mp3$/i,'').replace(/^\d+[-_.\s]?/,'');return{src:src.startsWith('music/')?src:`music/${src}`,title:n||`Track ${i+1}`};});if(!playing)load(0,false);updateTitle();}});
+  getPlaylist().then(tracks=>{if(Array.isArray(tracks)&&tracks.length>0){playlist=tracks;updateTitle();if(!playing)load(0,false);}});
 })();
 
 /* ══════════════════════════════════════════
@@ -381,7 +462,7 @@ document.querySelectorAll('a, button, .polaroid, .reel-frame, .letter-seal, .rea
 (function() {
   const skye=document.getElementById('skye-companion'); if(!skye) return;
   const cloud=skye.querySelector('.skye-cloud'), bubble=skye.querySelector('.skye-speech-bubble'), quote=skye.querySelector('.skye-quote');
-  const quotes=["Thinking of you right now... ♡","Scroll down, I'm right here with you. ✨","Life gets messy, but you're my favorite part. 🌸","Did you know? You're incredibly special to me.","meow meow rawr. 🐾","No matter what happens, you will always matter to me. ♡","Are you enjoying the music? ♫"];
+  const quotes=["Thinking of you right now... ♡","Scroll down, I'm right here with you. ✨","Life can be pretty fucked, but you're always my favorite part. 🌸","Did you know? You're the mostest bestest.","meow meow meowwww. 🐾","No matter what happens, US. ALWAYS. ♡","Rawwwr Khapppp 🐾","Are you enjoying the music? ♫"];
   let timeout=null;
   window.showSkyeBubble=function(text){
     if(timeout)clearTimeout(timeout);
