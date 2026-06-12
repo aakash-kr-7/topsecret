@@ -333,6 +333,9 @@ document.querySelectorAll('a, button, .polaroid, .reel-frame, .letter-seal, .rea
     document.querySelectorAll('.polaroid').forEach(p => {
       items.push({src:p.dataset.src||null, caption:p.dataset.caption||p.querySelector('.polaroid-caption')?.textContent||'', type:p.dataset.type||'img'});
     });
+    document.querySelectorAll('.reel-frame').forEach(r => {
+      items.push({src:r.dataset.video||null, caption:r.dataset.caption||'', type:'video'});
+    });
   }
   function openAt(idx) {
     collectItems(); current=((idx%items.length)+items.length)%items.length;
@@ -340,7 +343,18 @@ document.querySelectorAll('a, button, .polaroid, .reel-frame, .letter-seal, .rea
     const close=document.createElement('button'); close.id='lb-close';
     close.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>`;
     close.onclick=closeLB; lbCard.appendChild(close);
-    if(it.src) { const m=document.createElement(it.type==='video'?'video':'img'); m.src=it.src; if(it.type==='video'){m.controls=true;m.autoplay=true;} lbCard.appendChild(m); }
+    if(it.src) {
+      const m=document.createElement(it.type==='video'?'video':'img');
+      m.src=it.src;
+      if(it.type==='video'){
+        m.controls=true;
+        m.autoplay=true;
+        m.playsInline=true;
+        m.muted=false;
+        m.addEventListener('canplay', ()=> m.play().catch(()=>{}), {once:true});
+      }
+      lbCard.appendChild(m);
+    }
     else { const ph=document.createElement('div'); ph.style.cssText='width:320px;aspect-ratio:1;background:var(--blush);display:flex;align-items:center;justify-content:center;color:var(--deep-rose);opacity:0.5;font-family:Cormorant Garamond,serif;font-style:italic;font-size:18px;'; ph.textContent='your photo here'; lbCard.appendChild(ph); }
     const cap=document.createElement('p'); cap.className='lightbox-caption'; cap.textContent=it.caption; lbCard.appendChild(cap);
     lb.classList.add('open'); document.body.style.overflow='hidden';
@@ -350,8 +364,29 @@ document.querySelectorAll('a, button, .polaroid, .reel-frame, .letter-seal, .rea
   lbPrev.addEventListener('click',()=>openAt(current-1));
   lbNext.addEventListener('click',()=>openAt(current+1));
   document.addEventListener('keydown',e=>{if(!lb.classList.contains('open'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')openAt(current+1);if(e.key==='ArrowLeft')openAt(current-1);});
+  function startReelVideo(frame) {
+    const video = frame.querySelector('video');
+    if (!video) return;
+    video.muted = true;
+    video.playsInline = true;
+    video.setAttribute('playsinline', '');
+    video.setAttribute('muted', '');
+    video.play().catch(()=>{});
+    frame.classList.add('playing');
+  }
+
   document.querySelectorAll('.polaroid').forEach((p,i) => {
     p.addEventListener('click',e=>{e.stopPropagation();createSpark(e.clientX,e.clientY);openAt(i);});
+  });
+  document.querySelectorAll('.reel-frame').forEach((frame,i) => {
+    const video = frame.querySelector('video');
+    if (video) {
+      video.addEventListener('play', ()=> frame.classList.add('playing'));
+      video.addEventListener('pause', ()=> frame.classList.remove('playing'));
+      video.addEventListener('loadeddata', ()=> startReelVideo(frame), {once:true});
+      window.addEventListener('pointerdown', ()=> startReelVideo(frame), {once:true});
+    }
+    frame.addEventListener('click',e=>{e.stopPropagation(); createSpark(e.clientX,e.clientY); startReelVideo(frame); openAt(document.querySelectorAll('.polaroid').length + i);});
   });
 })();
 
@@ -482,30 +517,57 @@ document.querySelectorAll('a, button, .polaroid, .reel-frame, .letter-seal, .rea
   const section=document.querySelector('.calligraphy-section'); if(!section) return;
   const hand=section.querySelector('.calligraphy-hand');
   const lines=[section.querySelector('.written-line-1'),section.querySelector('.written-line-2'),section.querySelector('.written-line-3')];
-  const texts=["I know I'm not perfect. I can get messy,","I can say silly things and get it wrong sometimes...","But you are and always will be incredibly special to me."];
+  const texts=[
+    "Dear god, I am a freaking fool,",
+    "I have the most delicate soul ever as my girl and I am really not nice sometimes",
+    "If you are there and you hear me please take care of her.",
+    "Bless her with every happiness I cannot give her."
+  ];
   let started=false;
-  const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting&&!started){started=true;startWriting();obs.unobserve(e.target);}});},{threshold:0.45});
-  obs.observe(section);
-  async function startWriting() {
-    hand.style.display='block';
-    for(let l=0;l<lines.length;l++) {
-      const lineEl=lines[l], text=texts[l]; let cur="";
-      for(let i=0;i<text.length;i++) {
-        cur+=text[i]; lineEl.textContent=cur;
-        const lineRect=lineEl.getBoundingClientRect();
-        const paper=section.querySelector('.desk-paper');
-        const paperRect=paper.getBoundingClientRect();
-        const progress=i/text.length;
-        hand.style.left=(lineRect.left-paperRect.left)+progress*lineRect.width-10+'px';
-        hand.style.top=lineEl.offsetTop-10+'px';
-        if(text[i]!==' ') playWritingScratchSound();
-        await new Promise(r=>setTimeout(r,60+Math.random()*50));
-      }
-      await new Promise(r=>setTimeout(r,600));
+  let soundEnabled=false;
+
+  function enableSoundWhenVisible() {
+    if(soundEnabled) return;
+    soundEnabled=true;
+  }
+
+  async function typeLine(lineEl, text) {
+    lineEl.textContent='';
+    const paper=section.querySelector('.desk-paper');
+    const paperRect=paper.getBoundingClientRect();
+    for(let i=0;i<=text.length;i++) {
+      lineEl.textContent=text.slice(0,i);
+      const lineRect=lineEl.getBoundingClientRect();
+      const progress=i/text.length;
+      hand.style.left=(lineRect.left-paperRect.left)+progress*Math.max(lineRect.width,120)-18+'px';
+      hand.style.top=(lineEl.offsetTop+8)+'px';
+      if(soundEnabled && i>0 && text[i-1]!==' ') playWritingScratchSound();
+      await new Promise(r=>setTimeout(r,45+Math.random()*30));
     }
-    hand.style.transition='opacity 0.5s ease'; hand.style.opacity='0';
+    await new Promise(r=>setTimeout(r,450));
+  }
+
+  async function startWriting() {
+    if(started) return; started=true;
+    enableSoundWhenVisible();
+    hand.style.display='block';
+    hand.style.opacity='1';
+    hand.style.transition='left 0.08s linear, top 0.08s linear, opacity 0.25s ease';
+    for(let l=0;l<lines.length;l++) {
+      const lineEl=lines[l]; const text=texts[l] || '';
+      if(!lineEl) continue;
+      await typeLine(lineEl, text);
+    }
+    hand.style.transition='opacity 0.5s ease';
+    hand.style.opacity='0';
     setTimeout(()=>{hand.style.display='none';},500);
   }
+
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting) { startWriting(); obs.unobserve(e.target); } });
+  }, {threshold:0.35});
+
+  obs.observe(section);
 })();
 
 /* ══════════════════════════════════════════
