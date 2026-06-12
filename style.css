@@ -562,9 +562,17 @@ body {
   border: 1px dashed rgba(196,122,138,0.25);
   overflow: hidden;
 }
+.timeline-card-photo.timeline-photo-clickable {
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.timeline-card-photo.timeline-photo-clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(196,122,138,0.12);
+}
 .timeline-card-photo img {
-  width: 100%; height: 100%; object-fit: cover; display: block;
-  border-radius: 6px; opacity: 1;
+  width: 100%; height: 100%; object-fit: cover; object-position: center;
+  display: block; border-radius: 6px; opacity: 1;
   transform: translateZ(0);
 }
 
@@ -605,13 +613,12 @@ body {
   border-top: 3px solid transparent; border-bottom: 3px solid transparent;
 }
 .calligraphy-hand {
-  position: absolute; width: 84px; height: 112px;
+  position: absolute; width: 50px; height: 80px;
   pointer-events: none; z-index: 50; display: none; opacity: 0;
-  filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.12));
   transition: left 0.08s linear, top 0.08s linear, opacity 0.25s ease;
-  transform: rotate(-6deg);
+  transform: rotate(-8deg);
 }
-.calligraphy-hand svg { width: 100%; height: 100%; }
+.calligraphy-hand img { width: 100%; height: 100%; object-fit: contain; }
 .written-text-container { position: relative; z-index: 2; padding-right: 70px; }
 .written-line {
   font-family: 'Great Vibes', cursive; font-size: clamp(28px, 4.5vw, 42px);

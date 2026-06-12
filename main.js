@@ -336,6 +336,9 @@ document.querySelectorAll('a, button, .polaroid, .reel-frame, .letter-seal, .rea
     document.querySelectorAll('.reel-frame').forEach(r => {
       items.push({src:r.dataset.video||null, caption:r.dataset.caption||'', type:'video'});
     });
+    document.querySelectorAll('.timeline-card-photo[data-src]').forEach(photo => {
+      items.push({src:photo.dataset.src||null, caption:photo.dataset.caption||photo.querySelector('img')?.alt||'', type:photo.dataset.type||'img'});
+    });
   }
   function openAt(idx) {
     collectItems(); current=((idx%items.length)+items.length)%items.length;
@@ -387,6 +390,24 @@ document.querySelectorAll('a, button, .polaroid, .reel-frame, .letter-seal, .rea
       window.addEventListener('pointerdown', ()=> startReelVideo(frame), {once:true});
     }
     frame.addEventListener('click',e=>{e.stopPropagation(); createSpark(e.clientX,e.clientY); startReelVideo(frame); openAt(document.querySelectorAll('.polaroid').length + i);});
+  });
+
+  document.querySelectorAll('.timeline-card-photo[data-src]').forEach(photo => {
+    photo.addEventListener('click', e => {
+      e.stopPropagation();
+      createSpark(e.clientX, e.clientY);
+      collectItems();
+      const idx = items.findIndex(item => item.src === photo.dataset.src);
+      if (idx >= 0) openAt(idx);
+    });
+    photo.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        photo.click();
+      }
+    });
+    photo.setAttribute('role', 'button');
+    photo.setAttribute('tabindex', '0');
   });
 })();
 
@@ -516,11 +537,16 @@ document.querySelectorAll('a, button, .polaroid, .reel-frame, .letter-seal, .rea
 (function() {
   const section=document.querySelector('.calligraphy-section'); if(!section) return;
   const hand=section.querySelector('.calligraphy-hand');
-  const lines=[section.querySelector('.written-line-1'),section.querySelector('.written-line-2'),section.querySelector('.written-line-3')];
+  const lines=[
+    section.querySelector('.written-line-1'),
+    section.querySelector('.written-line-2'),
+    section.querySelector('.written-line-3'),
+    section.querySelector('.written-line-4')
+  ];
   const texts=[
     "Dear god, I am a freaking fool,",
-    "I have the most delicate soul ever as my girl and I am really not nice sometimes",
-    "If you are there and you hear me please take care of her.",
+    "I have the most delicate and beautiful soul as my gf and I am really not nice sometimes",
+    "If you are there and you hear me please know that i want her to be so so so happy.",
     "Bless her with every happiness I cannot give her."
   ];
   let started=false;
