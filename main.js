@@ -199,9 +199,22 @@ document.querySelectorAll('a, button, .polaroid, .reel-frame, .letter-seal, .rea
   const wrap = document.querySelector('.envelope-wrap');
   const main = document.getElementById('main-content');
   if(!scene||!wrap) return;
+
+  function requestFullscreenOnce() {
+    const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+    if (isFullscreen) return;
+
+    const target = document.documentElement || document.body;
+    const requestFullscreen = target.requestFullscreen || target.webkitRequestFullscreen || target.msRequestFullscreen;
+    if (requestFullscreen) {
+      requestFullscreen.call(target);
+    }
+  }
+
   let opened = false;
   wrap.addEventListener('click', () => {
     if(opened) return; opened=true;
+    requestFullscreenOnce();
     playPaperTearSound();
     wrap.classList.add('open');
     createSpark(wrap.getBoundingClientRect().left+wrap.getBoundingClientRect().width/2, wrap.getBoundingClientRect().top+wrap.getBoundingClientRect().height/2);
